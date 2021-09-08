@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./main.js" defer></script>
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+  </style>
+  <title>Vite App</title>
+</head>
+
+<body class="bg-gray-200">
+  <main class="">
+    <div class="w-full" x-data="{
+      jobList: $persist([
+        {
+          id: 1,
+          title: 'Software Engineer',
+          type:'Full-time',
+          location:'Remote',
+          category:'Engineering',
+        },
+        {
+          id: 2,
+          title: 'User Interface Designer',
+          type:'Part-time',
+          location:'Remote',
+          category:'Design',
+        },
+        {
+          id: 3,
+          title: 'User Interface Designer',
+          type:'Part-time',
+          location:'Remote',
+          category:'Design',
+        },
+      ]),
+      activeJob: {
+          title: '',
+          type:'',
+          location:'',
+          category:'',
+      },
+      isModalActive:false,
+      editMode:false,
+
+      editJob(id){
+        this.editMode = true;
+        this.isModalActive = true;
+        this.activeJob = this.jobList.find((item) => item.id == id );
+      },
+
+      updateJob(id){
+        const foundJob = this.jobList.find(item=> item.id == id);
+        if(foundJob){
+          this.jobList.splice(this.jobList.indexOf(foundJob), 1, this.activeJob)
+        }
+        this.isModalActive = false;
+      },
+
+      removeJob(id){
+        const foundJob = this.jobList.find(item=> item.id == id);
+        if(foundJob){ this.jobList.splice(this.jobList.indexOf(foundJob), 1) }
+      },
+    }">
+      <div class="max-w-6xl py-6 mx-auto sm:px-6 lg:px8">
+        <div class="mx-auto max-w-none">
+          <!-- Title -->
+          <div class="px-4 py-5 bg-white border-b border-gray-200 rounded sm:px-6">
+            <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-nowrap">
+              <div class="mt-2 ml-4">
+                <h3 class="text-lg font-medium leading-6 text-gray-900">
+                  Job Postings
+                </h3>
+              </div>
+              <div class="flex-shrink-0 mt-2 ml-4">
+                <button type="button" @click=" isModalActive = true; editMode = false "
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-full shadow-sm">Create
+                  new job</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- List -->
+          <ul class="pt-3 space-y-2 divide-y divide-gray-200">
+            <template x-for="job in jobList">
+
+              <li class="flex items-center justify-between px-3 py-3 bg-white rounded shadow md:px-6">
+                <div>
+                  <h2 class="text-xl text-blue-700" x-text="job.title"></h2>
+                  <div class="flex items-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-1" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span x-text="job.category"></span>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-8">
+                  <div>
+                    <p class="px-3 text-center bg-blue-300 rounded-full" x-text="job.type"></p>
+                    <div class="flex items-center mt-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      <span x-text="job.location"></span>
+                    </div>
+                  </div>
+                  <div class="flex space-x-3">
+                    <button @click="editJob(job.id)">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button @click="removeJob(job.id)">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </li>
+
+            </template>
+          </ul>
+        </div>
+      </div>
+
+      <!-- modal -->
+      <div x-cloak class="fixed inset-0 z-10 overflow-y-auto" x-transition x-show="isModalActive"
+        aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+
+          <div class="fixed inset-0 transition-opacity duration-300 ease-out bg-gray-500 bg-opacity-75"
+            aria-hidden="true"></div>
+
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+          <div
+            class="inline-block overflow-hidden text-left align-bottom transition-all duration-300 ease-out transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+              <h2 class="text-lg font-bold leading-6" x-text="editMode ? 'Update New Job':'Add New Job' ">
+              </h2>
+
+              <div class="w-full mt-4">
+                <label for="job-title" class="block text-sm font-medium text-gray-700">
+                  Job title
+                </label>
+                <input id="job-title" type="text" x-model="activeJob.title"
+                  class="block w-full p-2 mt-1 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="w-full mt-2">
+                <label for="category" class="block text-sm font-medium text-gray-700">
+                  Category
+                </label>
+                <select name="category" x-model="activeJob.category" id="category"
+                  class="block w-full p-2 py-3 mt-1 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500">
+                  <option value="Design">Design</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Developer">Developer</option>
+                  <option value="Manager">Manager</option>
+                </select>
+              </div>
+
+              <div class="w-full mt-2">
+                <label for="job-type" class="block text-sm font-medium text-gray-700">
+                  Type
+                </label>
+                <select name="job-type" x-model="activeJob.type" id="job-type"
+                  class="block w-full p-2 py-3 mt-1 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500">
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Casual">Casual</option>
+                  <option value="Freelance">Freelance</option>
+                </select>
+              </div>
+
+              <div class="w-full mt-2">
+                <label for="job-location" class="block text-sm font-medium text-gray-700">
+                  Location
+                </label>
+                <select name="job-location" x-model="activeJob.location" id="job-location"
+                  class="block w-full p-2 py-3 mt-1 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500">
+                  <option value="Remote">Remote</option>
+                  <option value="In-house">In-house</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="flex justify-between px-4 py-3 bg-gray-50 sm:px-6">
+              <button type="button" @click="isModalActive = false"
+                class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Cancel
+              </button>
+              <template x-if="!editMode">
+                <button type="button" @click="jobList.unshift(activeJob); isModalActive = false"
+                  class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                  Post job
+                </button>
+              </template>
+              <template x-if="editMode">
+                <button type="button" @click="updateJob(activeJob.id)"
+                  class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                  Update job
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+</body>
+
+</html>
